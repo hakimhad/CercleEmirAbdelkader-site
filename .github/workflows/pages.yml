@@ -1,0 +1,54 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  BUILD_DIR: dist         # ← si besoin, change en out / .output/public
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      # SPA fallback (optionnel mais recommandé pour React/Vue/Vite)
+      - name: Add 404 fallback for SPA routes
+        run: cp -f "$BUILD_DIR/index.html" "$BUILD_DIR/404.html" || true
+
+      # Désactive Jekyll (sinon certains fichiers sont ignorés)
+      - name: Add .nojekyll
+        run: bash -lc 'mkdir -p "$BUILD_DIR" && : > "$BUILD_DIR/.nojekyll"'
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ env.BUILD_DIR }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
