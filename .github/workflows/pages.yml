@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  BUILD_DIR: dist         # ← si besoin, change en out / .output/public
+  BUILD_DIR: dist   # ← change en out / .output/public si besoin
 
 jobs:
   build:
@@ -28,18 +28,32 @@ jobs:
           node-version: 20
           cache: npm
 
-      - run: npm ci
-      - run: npm run build
+      - name: Install deps
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
 
-      # SPA fallback (optionnel mais recommandé pour React/Vue/Vite)
-      - name: Add 404 fallback for SPA routes
-        run: cp -f "$BUILD_DIR/index.html" "$BUILD_DIR/404.html" || true
+      - name: Build
+        run: npm run build
 
-      # Désactive Jekyll (sinon certains fichiers sont ignorés)
+      - name: Add 404 fallback for SPA routes (optional)
+        shell: bash
+        run: |
+          if [ -f "$BUILD_DIR/index.html" ]; then
+            cp -f "$BUILD_DIR/index.html" "$BUILD_DIR/404.html" || true
+          fi
+
       - name: Add .nojekyll
-        run: bash -lc 'mkdir -p "$BUILD_DIR" && : > "$BUILD_DIR/.nojekyll"'
+        shell: bash
+        run: |
+          mkdir -p "$BUILD_DIR"
+          touch "$BUILD_DIR/.nojekyll"
 
-      - uses: actions/upload-pages-artifact@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ env.BUILD_DIR }}
 
