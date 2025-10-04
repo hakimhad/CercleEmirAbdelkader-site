@@ -232,7 +232,7 @@ const Accueil = ({ navigate }) => (
           France
         </div>
         <h1 className="mt-3 text-3xl md:text-5xl font-bold text-gray-900 leading-tight">
-          Nous rassemblons les élus français et algériens.
+          Rassembler les élus français et algériens.
         </h1>
         <p className="mt-4 text-gray-700 text-lg">
           Le Cercle Emir Abdelkader rassemble les élus français et algériens
@@ -283,13 +283,13 @@ const Accueil = ({ navigate }) => (
 const APropos = () => (
   <main className="max-w-3xl mx-auto px-4">
     <section className="prose prose-gray max-w-none mt-10">
-      <p>
+      <h3>
         Le Cercle Emir Abdelkader est une plateforme unique dédiée au
         renforcement des relations franco-algériennes. Nommé en l’honneur d’Emir
         Abdelkader, figure emblématique de la résistance algérienne au XIXe
         siècle et symbole de la fraternité entre les peuples, notre cercle
         incarne les valeurs de dialogue, de respect mutuel et de coopération.
-      </p>
+      </h3>
       <h2>Notre mission</h2>
       <p>
         Nous sommes engagés à promouvoir un partenariat fort et durable entre la
